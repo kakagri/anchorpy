@@ -31,7 +31,7 @@ If anchorpy-core is published to PyPI, you only need Python (no Rust required).
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/anchorpy.git
+git clone https://github.com/kakagri/anchorpy.git
 cd anchorpy
 
 # Run the installation script
@@ -45,18 +45,18 @@ cd anchorpy
 
 ```bash
 # Step 1: Install anchorpy-core (builds from source, requires Rust)
-pip install git+https://github.com/kevinheavey/anchorpy-core.git@main
+pip install git+https://github.com/kakagri/anchorpy-core.git@main
 
 # Step 2: Install anchorpy
-pip install git+https://github.com/yourusername/anchorpy.git@main
+pip install git+https://github.com/kakagri/anchorpy.git@main
 ```
 
 ### Method 3: Development Setup
 
 ```bash
 # Clone both repositories
-git clone https://github.com/kevinheavey/anchorpy-core.git
-git clone https://github.com/yourusername/anchorpy.git
+git clone https://github.com/kakagri/anchorpy-core.git
+git clone https://github.com/kakagri/anchorpy.git
 
 # Install anchorpy-core (builds Rust extension)
 cd anchorpy-core
@@ -76,7 +76,7 @@ If anchorpy-core is published to PyPI with pre-built wheels:
 pip install anchorpy-core
 
 # Get latest anchorpy from GitHub
-pip install git+https://github.com/yourusername/anchorpy.git@main
+pip install git+https://github.com/kakagri/anchorpy.git@main
 ```
 
 ## 🔧 Installation Script Options
@@ -87,10 +87,10 @@ The `install_from_github.sh` script supports several options:
 # Install in editable mode
 ./install_from_github.sh --editable
 
-# Use custom anchorpy-core repository
+# Use custom anchorpy-core repository (if using a fork)
 ./install_from_github.sh --anchorpy-core-repo https://github.com/yourfork/anchorpy-core.git
 
-# Install from specific anchorpy repository
+# Install from specific anchorpy repository (if using a fork)
 ./install_from_github.sh --anchorpy-repo https://github.com/yourfork/anchorpy.git
 
 # Show help
@@ -166,7 +166,7 @@ rustup update
 
 anchorpy-core needs to be installed first:
 ```bash
-pip install git+https://github.com/kevinheavey/anchorpy-core.git@main
+pip install git+https://github.com/kakagri/anchorpy-core.git@main
 ```
 
 ### "error: Microsoft Visual C++ 14.0 is required" (Windows)
@@ -181,10 +181,10 @@ To update to the latest versions:
 
 ```bash
 # Update anchorpy-core
-pip install --upgrade --force-reinstall git+https://github.com/kevinheavey/anchorpy-core.git@main
+pip install --upgrade --force-reinstall git+https://github.com/kakagri/anchorpy-core.git@main
 
 # Update anchorpy
-pip install --upgrade --force-reinstall git+https://github.com/yourusername/anchorpy.git@main
+pip install --upgrade --force-reinstall git+https://github.com/kakagri/anchorpy.git@main
 ```
 
 ## 📚 Documentation
@@ -209,6 +209,8 @@ This project maintains the same license as the original AnchorPy project.
 
 ## 🔗 Related Projects
 
-- [anchorpy-core](https://github.com/kevinheavey/anchorpy-core) - Rust extension for IDL parsing
+- [anchorpy-core](https://github.com/kakagri/anchorpy-core) - Rust extension for IDL parsing (this fork)
+- [anchorpy](https://github.com/kakagri/anchorpy) - Python Anchor client (this fork)
+- [Original anchorpy-core](https://github.com/kevinheavey/anchorpy-core) - Original Rust extension
 - [Original AnchorPy](https://github.com/kevinheavey/anchorpy) - The original project
 - [Anchor](https://github.com/coral-xyz/anchor) - Solana's Sealevel Framework

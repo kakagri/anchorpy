@@ -13,7 +13,7 @@ dependencies = [
     "toolz>=0.11.2,<0.12",
     "pyheck>=0.1.4,<0.2",
     "based58>=0.1.1,<0.2",
-    "anchorpy-core @ git+https://github.com/kevinheavey/anchorpy-core.git@main",
+    "anchorpy-core @ git+https://github.com/kakagri/anchorpy-core.git@main",
     "toml>=0.10.2,<0.11",
 ]
 
@@ -33,7 +33,7 @@ pytest = [
 ]
 
 [project.urls]
-Repository = "https://github.com/kevinheavey/anchorpy"
+Repository = "https://github.com/kakagri/anchorpy"
 Documentation = "https://kevinheavey.github.io/anchorpy/"
 
 [project.scripts]

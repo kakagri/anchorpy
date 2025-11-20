@@ -43,7 +43,7 @@ echo ""
 
 # Parse command line arguments
 EDITABLE_MODE=false
-ANCHORPY_CORE_REPO="https://github.com/kevinheavey/anchorpy-core.git"
+ANCHORPY_CORE_REPO="https://github.com/kakagri/anchorpy-core.git"
 ANCHORPY_REPO="."  # Default to current directory
 
 while [[ "$#" -gt 0 ]]; do

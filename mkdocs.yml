@@ -26,8 +26,8 @@ markdown_extensions:
   - meta
   - pymdownx.tabbed:
       alternate_style: true
-repo_url: https://github.com/kevinheavey/anchorpy
-repo_name: kevinheavey/anchorpy
+repo_url: https://github.com/kakagri/anchorpy
+repo_name: kakagri/anchorpy
 site_url: https://kevinheavey.github.io/anchorpy/
 plugins:
   - mkdocstrings:
