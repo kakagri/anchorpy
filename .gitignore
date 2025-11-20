@@ -138,3 +138,17 @@ dmypy.json
 cython_debug/
 
 .anchor
+
+# IDE configurations
+.idea/
+.vscode/
+*.iml
+
+# Development/debug scripts
+test_decoupled.py
+find_empty_fields.py
+verify_codegen.py
+test_old_format_codegen.py
+
+# Generated client code (for testing)
+codegen_*/

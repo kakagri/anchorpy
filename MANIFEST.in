@@ -6,9 +6,6 @@ include README.md
 include LICENSE
 include pyproject.toml
 
-# Include test IDL files for testing
-include *.json
-
 # Exclude unnecessary files
 global-exclude *.pyc
 global-exclude *.pyo

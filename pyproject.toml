@@ -2,7 +2,10 @@
 name = "anchorpy"
 version = "0.21.0"
 description = "The Python Anchor client."
-authors = [{ name = "kevinheavey", email = "kevinheavey123@gmail.com" }]
+authors = [
+    { name = "kevinheavey", email = "kevinheavey123@gmail.com" },
+    { name = "kakagri", email = "kh.grira@gmail.com" }
+]
 requires-python = "~=3.9"
 readme = "README.md"
 dependencies = [
