@@ -108,10 +108,16 @@ def client_gen(
     """Generate Python client code from the specified anchor IDL."""
     idl_obj = Idl.from_json(idl.read_text())
     if program_id is None:
-        idl_metadata = idl_obj.metadata
-        address_from_idl = (
-            idl_metadata["address"] if isinstance(idl_metadata, dict) else None
-        )
+        # Check for address in new format (top level)
+        address_from_idl = idl_obj.address if hasattr(idl_obj, 'address') and idl_obj.address else None
+
+        # Fall back to metadata.address (old format)
+        if address_from_idl is None:
+            idl_metadata = idl_obj.metadata
+            address_from_idl = (
+                idl_metadata.get("address") if isinstance(idl_metadata, dict) else None
+            )
+
         if address_from_idl is None:
             typer.echo(
                 "No program ID found in IDL. Use the --program-id "
