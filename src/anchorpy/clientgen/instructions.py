@@ -30,6 +30,10 @@ from anchorpy.clientgen.common import (
     _py_type_from_idl,
     _sanitize,
 )
+from anchorpy.coder.idl_compat import (
+    get_account_writable,
+    get_account_signer,
+)
 from anchorpy.clientgen.genpy_extension import (
     ANNOTATIONS_IMPORT,
     Call,
@@ -120,11 +124,15 @@ def recurse_accounts(
                     nested_keys = [f'["{key}"]' for key in names]
                     dict_accessor = "".join(nested_keys)
                     pubkey_var = f"accounts{dict_accessor}"
+            # Get account flags with backward compatibility
+            is_signer = get_account_signer(acc)
+            is_writable = get_account_writable(acc)
+
             if acc.is_optional:
                 elements.append(
                     f"AccountMeta(pubkey={pubkey_var}, "
-                    f"is_signer={acc.is_signer}, "
-                    f"is_writable={acc.is_mut}) "
+                    f"is_signer={is_signer}, "
+                    f"is_writable={is_writable}) "
                     f"if {pubkey_var} else "
                     f"AccountMeta(pubkey=program_id, "
                     f"is_signer=False, is_writable=False)"
@@ -132,8 +140,8 @@ def recurse_accounts(
             else:
                 elements.append(
                     f"AccountMeta(pubkey={pubkey_var}, "
-                    f"is_signer={acc.is_signer}, "
-                    f"is_writable={acc.is_mut})"
+                    f"is_signer={is_signer}, "
+                    f"is_writable={is_writable})"
                 )
     return elements, acc_idx
 

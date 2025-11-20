@@ -7,7 +7,6 @@ from typing import AsyncGenerator, Callable, Literal, Optional, Union
 
 from pytest import fixture
 from pytest_asyncio import fixture as async_fixture
-from pytest_xprocess import getrootdir
 from xprocess import ProcessStarter, XProcess, XProcessInfo
 
 from anchorpy.program.core import Program
@@ -127,7 +126,7 @@ class _FixedXProcess(XProcess):
 @async_fixture(scope="session")
 def _fixed_xprocess(request):
     """Yield session-scoped XProcess helper to manage long-running processes required for testing."""  # noqa: E501
-    rootdir = getrootdir(request.config)
+    rootdir = request.config.rootdir
     with _FixedXProcess(request.config, rootdir) as xproc:
         # pass in xprocess object into pytest_unconfigure
         # through config for proper cleanup during teardown

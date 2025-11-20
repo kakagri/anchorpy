@@ -79,16 +79,17 @@ def gen_index_code(idl: Idl) -> str:
     imports: list[TypingUnion[Import, FromImport]] = [Import("typing")]
     for ty in idl.types:
         ty_type = ty.ty
+        sanitized_name = _sanitize(ty.name)
         module_name = _sanitize(snake(ty.name))
         imports.append(FromImport(".", [module_name]))
         if isinstance(ty_type, IdlTypeDefinitionTyStruct):
-            import_members = [_sanitize(ty.name), _json_interface_name(ty.name)]
+            import_members = [sanitized_name, _json_interface_name(sanitized_name)]
         elif isinstance(ty_type, IdlTypeDefinitionTyAlias):
-            import_members = [_sanitize(ty.name)]
+            import_members = [sanitized_name]
         else:
             import_members = [
-                _kind_interface_name(ty.name),
-                _json_interface_name(ty.name),
+                _kind_interface_name(sanitized_name),
+                _json_interface_name(sanitized_name),
             ]
         imports.append(
             FromImport(
@@ -122,7 +123,7 @@ def gen_types_code(idl: Idl, out: Path) -> dict[Path, str]:
         ty_type = ty.ty
         if isinstance(ty_type, IdlTypeDefinitionTyAlias):
             body = Assign(
-                ty.name,
+                ty_name,
                 _py_type_from_idl(
                     idl,
                     ty_type.value,

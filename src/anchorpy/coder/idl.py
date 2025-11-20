@@ -18,6 +18,7 @@ from anchorpy_core.idl import (
     IdlTypeSimple,
     IdlTypeVec,
 )
+from anchorpy.coder.idl_compat import get_defined_type_name
 from borsh_construct import (
     F32,
     F64,
@@ -72,7 +73,7 @@ _enums_cache: dict[tuple[str, str], Enum] = {}
 
 
 def _handle_enum_variants(
-    idl_enum: IdlTypeDefinitionTyEnum,
+    idl_enum,  # Can be IdlTypeDefinitionTyEnum or dict
     types: TypeDefs,
     name: str,
 ) -> Enum:
@@ -86,20 +87,37 @@ def _handle_enum_variants(
 
 
 def _handle_enum_variants_no_cache(
-    idl_enum: IdlTypeDefinitionTyEnum,
+    idl_enum,  # Can be IdlTypeDefinitionTyEnum or dict
     types: TypeDefs,
     name: str,
 ) -> Enum:
     variants = []
     dclasses = {}
-    for variant in idl_enum.variants:
-        variant_name = variant.name
-        if variant.fields is None:
+    # Get variants handling both object and dict formats
+    enum_variants = idl_enum.variants if hasattr(idl_enum, 'variants') else idl_enum.get('variants', [])
+    for variant in enum_variants:
+        # Handle both object and dict variants
+        if hasattr(variant, 'name'):
+            variant_name = variant.name
+            variant_fields = variant.fields
+        elif isinstance(variant, dict):
+            variant_name = variant.get('name')
+            variant_fields = variant.get('fields')
+        else:
+            continue
+
+        if variant_fields is None:
             variants.append(variant_name)
         else:
-            variant_fields = variant.fields
-            flds = variant_fields.fields
-            if isinstance(flds[0], IdlField):
+            # Get fields from variant_fields (can be object or dict)
+            if hasattr(variant_fields, 'fields'):
+                flds = variant_fields.fields
+            elif isinstance(variant_fields, dict):
+                flds = variant_fields.get('fields', [])
+            else:
+                flds = variant_fields if isinstance(variant_fields, list) else []
+            # Check if fields are named (have 'name' property) or tuple-style
+            if flds and (isinstance(flds[0], IdlField) or (isinstance(flds[0], dict) and 'name' in flds[0])):
                 fields = []
                 named_fields = cast(list[IdlField], flds)
                 for fld in named_fields:
@@ -137,21 +155,42 @@ def _handle_enum_variants_no_cache(
 
 
 def _typedef_layout_without_field_name(
-    typedef: IdlTypeDefinition,
+    typedef,  # Can be IdlTypeDefinition or dict
     types: TypeDefs,
 ) -> Construct:
-    typedef_type = typedef.ty
-    name = typedef.name
-    if isinstance(typedef_type, IdlTypeDefinitionTyStruct):
-        field_layouts = [_field_layout(field, types) for field in typedef_type.fields]
+    # Handle both object and dict formats
+    if hasattr(typedef, 'ty'):
+        typedef_type = typedef.ty
+        name = typedef.name
+    elif isinstance(typedef, dict):
+        typedef_type = typedef.get('ty') or typedef.get('type')
+        name = typedef.get('name')
+    else:
+        raise ValueError(f"Unknown typedef format: {type(typedef)}")
+    # Check typedef_type (can be object or dict)
+    is_struct = isinstance(typedef_type, IdlTypeDefinitionTyStruct) or (
+        isinstance(typedef_type, dict) and typedef_type.get('kind') == 'struct'
+    )
+    is_enum = isinstance(typedef_type, IdlTypeDefinitionTyEnum) or (
+        isinstance(typedef_type, dict) and typedef_type.get('kind') == 'enum'
+    )
+    is_alias = isinstance(typedef_type, IdlTypeDefinitionTyAlias) or (
+        isinstance(typedef_type, dict) and typedef_type.get('kind') == 'alias'
+    )
+
+    if is_struct:
+        fields = typedef_type.fields if hasattr(typedef_type, 'fields') else typedef_type.get('fields', [])
+        field_layouts = [_field_layout(field, types) for field in fields]
         cstruct = CStruct(*field_layouts)
         datacls = _idl_typedef_ty_struct_to_dataclass_type(typedef_type, name)
         return _DataclassStruct(cstruct, datacls=datacls)
-    elif isinstance(typedef_type, IdlTypeDefinitionTyEnum):
+    elif is_enum:
         return _handle_enum_variants(typedef_type, types, name)
-    elif isinstance(typedef_type, IdlTypeDefinitionTyAlias):
-        return _type_layout(typedef_type.value, types)
-    unknown_type = typedef_type.kind
+    elif is_alias:
+        value = typedef_type.value if hasattr(typedef_type, 'value') else typedef_type.get('value')
+        return _type_layout(value, types)
+
+    unknown_type = typedef_type.kind if hasattr(typedef_type, 'kind') else typedef_type.get('kind', 'unknown')
     raise ValueError(f"Unknown type {unknown_type}")
 
 
@@ -184,10 +223,16 @@ def _type_layout(type_: IdlType, types: TypeDefs) -> Construct:
     elif isinstance(type_, IdlTypeOption):
         return Option(_type_layout(type_.option, types))
     elif isinstance(type_, IdlTypeDefined):
-        defined = type_.defined
+        # Support both old string format and new object format
+        defined = get_defined_type_name(type_.defined)
         if not types:
             raise ValueError("User defined types not provided")
-        filtered = [t for t in types if t.name == defined]
+        # Handle both object and dict types
+        filtered = []
+        for t in types:
+            type_name = t.name if hasattr(t, 'name') else t.get('name')
+            if type_name == defined:
+                filtered.append(t)
         if len(filtered) != 1:
             raise ValueError(f"Type not found {defined}")
         return _typedef_layout_without_field_name(filtered[0], types)
@@ -199,7 +244,7 @@ def _type_layout(type_: IdlType, types: TypeDefs) -> Construct:
     raise ValueError(f"Type {type_} not implemented yet")
 
 
-def _field_layout(field: IdlField, types: TypeDefs) -> Construct:
+def _field_layout(field, types: TypeDefs) -> Construct:  # field can be IdlField or dict
     """Map IDL spec to `borsh-construct` types.
 
     Args:
@@ -214,8 +259,16 @@ def _field_layout(field: IdlField, types: TypeDefs) -> Construct:
     Returns:
         `Construct` object from `borsh-construct`.
     """
-    field_name = snake(field.name) if field.name else ""
-    return field_name / _type_layout(field.ty, types)
+    # Handle both object and dict fields
+    if hasattr(field, 'name'):
+        field_name = snake(field.name) if field.name else ""
+        field_ty = field.ty
+    elif isinstance(field, dict):
+        field_name = snake(field.get('name')) if field.get('name') else ""
+        field_ty = field.get('ty') or field.get('type')
+    else:
+        raise ValueError(f"Unknown field format: {type(field)}")
+    return field_name / _type_layout(field_ty, types)
 
 
 def _make_datacls(name: str, fields: list[str]) -> type:
@@ -226,7 +279,7 @@ _idl_typedef_ty_struct_to_dataclass_type_cache: dict[tuple[str, str], Type] = {}
 
 
 def _idl_typedef_ty_struct_to_dataclass_type(
-    typedef_type: IdlTypeDefinitionTyStruct,
+    typedef_type,  # Can be IdlTypeDefinitionTyStruct or dict
     name: str,
 ) -> Type:
     dict_key = (name, str(typedef_type))
@@ -239,7 +292,7 @@ def _idl_typedef_ty_struct_to_dataclass_type(
 
 
 def _idl_typedef_ty_struct_to_dataclass_type_no_cache(
-    typedef_type: IdlTypeDefinitionTyStruct,
+    typedef_type,  # Can be IdlTypeDefinitionTyStruct or dict
     name: str,
 ) -> Type:
     """Generate a dataclass definition from an IDL struct.
@@ -252,8 +305,18 @@ def _idl_typedef_ty_struct_to_dataclass_type_no_cache(
         Dataclass definition.
     """
     dataclass_fields = []
-    for field in typedef_type.fields:
-        field_name = snake(field.name)
+    # Get fields handling both object and dict formats
+    fields = typedef_type.fields if hasattr(typedef_type, 'fields') else typedef_type.get('fields', [])
+
+    for field in fields:
+        # Handle both object and dict field formats
+        if hasattr(field, 'name'):
+            field_name = snake(field.name)
+        elif isinstance(field, dict):
+            field_name = snake(field.get('name', ''))
+        else:
+            continue
+
         field_name_to_use = f"{field_name}_" if field_name in kwlist else field_name
         dataclass_fields.append(
             field_name_to_use,

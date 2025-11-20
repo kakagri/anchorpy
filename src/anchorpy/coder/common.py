@@ -105,7 +105,7 @@ def _variant_size(idl: Idl, variant: IdlEnumVariant) -> int:
     return sum(field_sizes)
 
 
-def _account_size(idl: Idl, idl_account: IdlTypeDefinition) -> int:
+def _account_size(idl: Idl, idl_account) -> int:
     """Calculate account size in bytes.
 
     Args:
@@ -115,14 +115,58 @@ def _account_size(idl: Idl, idl_account: IdlTypeDefinition) -> int:
     Returns:
         Account size.
     """
-    idl_account_type = idl_account.ty
+    # Handle both object and dict formats
+    if hasattr(idl_account, 'ty'):
+        idl_account_type = idl_account.ty
+    elif isinstance(idl_account, dict):
+        # For dict format, check both 'ty' and 'type' keys
+        if 'ty' in idl_account:
+            idl_account_type = idl_account['ty']
+        elif 'type' in idl_account:
+            idl_account_type = idl_account['type']
+        else:
+            # If neither exists, treat the whole dict as the type
+            idl_account_type = idl_account
+    else:
+        idl_account_type = idl_account
+    # Handle both object and dict formats for type checking
     if isinstance(idl_account_type, IdlTypeDefinitionTyEnum):
         variant_sizes = (
             _variant_size(idl, variant) for variant in idl_account_type.variants
         )
         return max(variant_sizes) + 1
+    elif isinstance(idl_account_type, dict) and idl_account_type.get('kind') == 'enum':
+        # Dict format enum
+        variant_sizes = (
+            _variant_size(idl, variant) for variant in idl_account_type.get('variants', [])
+        )
+        return max(variant_sizes) + 1
+
     if isinstance(idl_account_type, IdlTypeDefinitionTyAlias):
         return _type_size(idl, idl_account_type.value)
-    if idl_account_type.fields is None:
+    elif isinstance(idl_account_type, dict) and idl_account_type.get('kind') == 'alias':
+        # Dict format alias
+        return _type_size(idl, idl_account_type.get('value'))
+
+    # Handle struct fields
+    fields = None
+    if hasattr(idl_account_type, 'fields'):
+        fields = idl_account_type.fields
+    elif isinstance(idl_account_type, dict) and 'fields' in idl_account_type:
+        fields = idl_account_type['fields']
+
+    if fields is None:
         return 0
-    return sum(_type_size(idl, f.ty) for f in idl_account_type.fields)
+
+    # Calculate field sizes
+    if isinstance(fields, list) and fields:
+        if hasattr(fields[0], 'ty'):
+            # Object format fields
+            return sum(_type_size(idl, f.ty) for f in fields)
+        elif isinstance(fields[0], dict) and 'type' in fields[0]:
+            # Dict format fields
+            return sum(_type_size(idl, f['type']) for f in fields)
+        else:
+            # Assume simple type list (tuple struct)
+            return sum(_type_size(idl, f) for f in fields)
+    return 0

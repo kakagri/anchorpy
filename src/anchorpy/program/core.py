@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import zlib
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from anchorpy_core.idl import Idl
 from pyheck import snake
@@ -143,19 +143,24 @@ class Program(object):
     """
 
     def __init__(
-        self, idl: Idl, program_id: Pubkey, provider: Optional[Provider] = None
+        self, idl: Union[Idl, dict], program_id: Pubkey, provider: Optional[Provider] = None
     ):
         """Initialize the Program object.
 
         Args:
-            idl: The parsed IDL object.
+            idl: The parsed IDL object or IDL dictionary.
             program_id: The program ID.
             provider: The Provider object for the Program. Defaults to Provider.local().
         """
-        self.idl = idl
+        # Convert dict to Idl if needed
+        if isinstance(idl, dict):
+            import json
+            self.idl = Idl.from_json(json.dumps(idl))
+        else:
+            self.idl = idl
         self.program_id = program_id
         self.provider = provider if provider is not None else Provider.local()
-        self.coder = Coder(idl)
+        self.coder = Coder(self.idl)
 
         (
             rpc,
@@ -166,7 +171,7 @@ class Program(object):
             types,
             methods,
         ) = _build_namespace(
-            idl,
+            self.idl,
             self.coder,
             program_id,
             self.provider,

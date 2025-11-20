@@ -1,0 +1,17 @@
+# Include all source files
+recursive-include src *.py *.pyi *.typed
+
+# Include important root files
+include README.md
+include LICENSE
+include pyproject.toml
+
+# Include test IDL files for testing
+include *.json
+
+# Exclude unnecessary files
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.swp
+global-exclude .DS_Store
+global-exclude __pycache__

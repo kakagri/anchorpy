@@ -8,6 +8,7 @@ from pyheck import snake
 
 from anchorpy.coder.common import _sighash
 from anchorpy.coder.idl import _field_layout
+from anchorpy.coder.idl_compat import get_instruction_discriminator
 from anchorpy.idl import TypeDefs
 from anchorpy.program.common import NamedInstruction
 
@@ -42,7 +43,14 @@ class InstructionCoder(Adapter):
         sighash_to_name: Dict[bytes, str] = {}
         for ix in idl.instructions:
             ix_name = snake(ix.name)
-            sh = sighasher.build(ix_name)
+            # Support both calculated and precomputed discriminators
+            disc_list = get_instruction_discriminator(ix)
+            if disc_list:
+                # New format: use precomputed discriminator
+                sh = bytes(disc_list)
+            else:
+                # Old format: calculate from name
+                sh = sighasher.build(ix_name)
             sighashes[ix_name] = sh
             sighash_layouts[sh] = self.ix_layout[ix_name]
             sighash_to_name[sh] = ix_name

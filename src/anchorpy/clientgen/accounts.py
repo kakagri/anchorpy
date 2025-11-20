@@ -47,6 +47,7 @@ from anchorpy.clientgen.genpy_extension import (
     TypedParam,
 )
 from anchorpy.coder.accounts import _account_discriminator
+from anchorpy.coder.idl_compat import get_account_type_definition
 
 
 def gen_accounts(idl: Idl, root: Path) -> None:
@@ -72,12 +73,14 @@ def gen_index_file(idl: Idl, accounts_dir: Path) -> None:
 def gen_index_code(idl: Idl) -> str:
     imports: list[FromImport] = []
     for acc in idl.accounts:
-        acc_name = _sanitize(acc.name)
+        # Handle both object and dict formats
+        name = acc.name if hasattr(acc, 'name') else acc.get('name')
+        acc_name = _sanitize(name)
         members = [
             acc_name,
             _json_interface_name(acc_name),
         ]
-        module_name = _sanitize(snake(acc.name))
+        module_name = _sanitize(snake(name))
         imports.append(FromImport(f".{module_name}", members))
     return str(Collection(imports))
 
@@ -85,14 +88,16 @@ def gen_index_code(idl: Idl) -> str:
 def gen_accounts_code(idl: Idl, accounts_dir: Path) -> dict[Path, str]:
     res = {}
     for acc in idl.accounts:
-        filename = f"{_sanitize(snake(acc.name))}.py"
+        # Handle both object and dict formats
+        name = acc.name if hasattr(acc, 'name') else acc.get('name')
+        filename = f"{_sanitize(snake(name))}.py"
         path = accounts_dir / filename
         code = gen_account_code(acc, idl)
         res[path] = code
     return res
 
 
-def gen_account_code(acc: IdlTypeDefinition, idl: Idl) -> str:
+def gen_account_code(acc, idl: Idl) -> str:
     base_imports = [
         Import("typing"),
         FromImport("dataclasses", ["dataclass"]),
@@ -114,9 +119,41 @@ def gen_account_code(acc: IdlTypeDefinition, idl: Idl) -> str:
     )
     fields_interface_params: list[TypedParam] = []
     json_interface_params: list[TypedParam] = []
-    ty = cast(IdlTypeDefinitionTyStruct, acc.ty)
-    fields = ty.fields
-    name = _sanitize(acc.name)
+
+    # Get account name (handle both object and dict)
+    acc_name_raw = acc.name if hasattr(acc, 'name') else acc.get('name')
+    name = _sanitize(acc_name_raw)
+
+    # For old format, the account IS the type definition
+    # For new format, we need to look it up in types array
+    # Check if account has a 'ty' or 'type' field (old format)
+    has_ty_field = hasattr(acc, 'ty') or (isinstance(acc, dict) and ('ty' in acc or 'type' in acc))
+
+    if has_ty_field:
+        # Old format: account is the type definition
+        type_def = acc
+    else:
+        # New format: need to look up in types array
+        type_def = get_account_type_definition(acc, idl.types)
+
+    # Get the struct type
+    if hasattr(type_def, 'ty'):
+        ty = cast(IdlTypeDefinitionTyStruct, type_def.ty)
+    elif isinstance(type_def, dict) and 'ty' in type_def:
+        ty = type_def['ty']
+    elif isinstance(type_def, dict) and 'type' in type_def:
+        ty = type_def['type']
+    else:
+        # Assume the type_def itself is the type structure
+        ty = type_def
+
+    # Get fields
+    if hasattr(ty, 'fields'):
+        fields = ty.fields
+    elif isinstance(ty, dict) and 'fields' in ty:
+        fields = ty['fields']
+    else:
+        fields = []
     json_interface_name = _json_interface_name(name)
     layout_items: list[str] = []
     init_body_assignments: list[Assign] = []
@@ -124,13 +161,24 @@ def gen_account_code(acc: IdlTypeDefinition, idl: Idl) -> str:
     to_json_entries: list[StrDictEntry] = []
     from_json_entries: list[NamedArg] = []
     for field in fields:
-        field_name = _sanitize(snake(field.name))
+        # Handle both object and dict field formats
+        if hasattr(field, 'name'):
+            field_name_raw = field.name
+            field_ty = field.ty
+        elif isinstance(field, dict):
+            field_name_raw = field.get('name')
+            field_ty = field.get('type') or field.get('ty')
+        else:
+            # Skip if we can't determine the field structure
+            continue
+
+        field_name = _sanitize(snake(field_name_raw))
         fields_interface_params.append(
             TypedParam(
                 field_name,
                 _py_type_from_idl(
                     idl=idl,
-                    ty=field.ty,
+                    ty=field_ty,
                     types_relative_imports=False,
                     use_fields_interface_for_struct=False,
                 ),
@@ -139,12 +187,12 @@ def gen_account_code(acc: IdlTypeDefinition, idl: Idl) -> str:
         json_interface_params.append(
             TypedParam(
                 field_name,
-                _idl_type_to_json_type(ty=field.ty, types_relative_imports=False),
+                _idl_type_to_json_type(ty=field_ty, types_relative_imports=False),
             )
         )
         layout_items.append(
             _layout_for_type(
-                idl=idl, ty=field.ty, name=field_name, types_relative_imports=False
+                idl=idl, ty=field_ty, name=field_name, types_relative_imports=False
             )
         )
         init_body_assignments.append(
@@ -155,19 +203,21 @@ def gen_account_code(acc: IdlTypeDefinition, idl: Idl) -> str:
                 field_name,
                 _field_from_decoded(
                     idl=idl,
-                    ty=IdlField(name=snake(field.name), docs=None, ty=field.ty),
+                    ty=IdlField(name=snake(field_name_raw), docs=None, ty=field_ty),
                     types_relative_imports=False,
                     val_prefix="dec.",
                 ),
             )
         )
+        # Create a proper field object for _field_to_json
+        field_obj = IdlField(name=field_name_raw, docs=None, ty=field_ty) if isinstance(field, dict) else field
         to_json_entries.append(
-            StrDictEntry(field_name, _field_to_json(idl, field, "self."))
+            StrDictEntry(field_name, _field_to_json(idl, field_obj, "self."))
         )
         from_json_entries.append(
             NamedArg(
                 field_name,
-                _field_from_json(idl=idl, ty=field, types_relative_imports=False),
+                _field_from_json(idl=idl, ty=field_obj, types_relative_imports=False),
             )
         )
     json_interface = TypedDict(json_interface_name, json_interface_params)

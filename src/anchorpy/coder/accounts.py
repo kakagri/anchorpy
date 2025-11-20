@@ -6,6 +6,7 @@ from anchorpy_core.idl import Idl
 from construct import Adapter, Bytes, Container, Sequence, Switch
 
 from anchorpy.coder.idl import _typedef_layout
+from anchorpy.coder.idl_compat import get_account_discriminator, get_account_type_definition
 from anchorpy.program.common import NamedInstruction as AccountToSerialize
 
 ACCOUNT_DISCRIMINATOR_SIZE = 8  # bytes
@@ -20,12 +21,28 @@ class AccountsCoder(Adapter):
         Args:
             idl: The parsed IDL object.
         """
-        self._accounts_layout = {
-            acc.name: _typedef_layout(acc, idl.types, acc.name) for acc in idl.accounts
-        }
-        self.acc_name_to_discriminator = {
-            acc.name: _account_discriminator(acc.name) for acc in idl.accounts
-        }
+        # Build account layouts - handling both old and new formats
+        self._accounts_layout = {}
+        for acc in idl.accounts:
+            # Get account name (handle both object and dict)
+            acc_name = acc.name if hasattr(acc, 'name') else acc.get('name')
+            # Get the type definition (handles both old and new format)
+            type_def = get_account_type_definition(acc, idl.types)
+            self._accounts_layout[acc_name] = _typedef_layout(type_def, idl.types, acc_name)
+
+        # Support both calculated and precomputed discriminators
+        self.acc_name_to_discriminator = {}
+        for acc in idl.accounts:
+            # Get account name (handle both object and dict)
+            acc_name = acc.name if hasattr(acc, 'name') else acc.get('name')
+            # New format: use precomputed discriminator if available
+            disc_list = get_account_discriminator(acc)
+            if disc_list:
+                disc = bytes(disc_list)
+            else:
+                # Old format: calculate from name
+                disc = _account_discriminator(acc_name)
+            self.acc_name_to_discriminator[acc_name] = disc
         self.discriminator_to_acc_name = {
             disc: acc_name for acc_name, disc in self.acc_name_to_discriminator.items()
         }

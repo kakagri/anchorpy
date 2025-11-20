@@ -16,6 +16,8 @@ from anchorpy_core.idl import (
 )
 from pyheck import snake
 
+from anchorpy.coder.idl_compat import get_defined_type_name
+
 _DEFAULT_DEFINED_TYPES_PREFIX = "types."
 
 INT_TYPES = {
@@ -51,6 +53,9 @@ def _json_interface_name(type_name: str) -> str:
 
 
 def _sanitize(name: str) -> str:
+    # Replace :: with _ for Rust-style paths
+    name = name.replace('::', '_')
+    # Add underscore if it's a Python keyword
     return f"{name}_" if keyword.iskeyword(name) else name
 
 
@@ -77,7 +82,9 @@ def _py_type_from_idl(
         )
         return f"typing.Optional[{inner_type}]"
     if isinstance(ty, IdlTypeDefined):
-        defined = _sanitize(ty.defined)
+        # Support both old string format and new object format
+        type_name = get_defined_type_name(ty.defined)
+        defined = _sanitize(type_name)
         filtered = [t for t in idl.types if _sanitize(t.name) == defined]
         maybe_coption_split = defined.split("COption<")
         if len(maybe_coption_split) == 2:
@@ -91,10 +98,10 @@ def _py_type_from_idl(
         if len(filtered) != 1:
             raise ValueError(f"Type not found {defined}")
         typedef_type = filtered[0].ty
-        module = _sanitize(snake(ty.defined))
+        module = _sanitize(snake(type_name))
         if isinstance(typedef_type, IdlTypeDefinitionTyStruct):
             name = (
-                _fields_interface_name(ty.defined)
+                _fields_interface_name(defined)  # Use sanitized name
                 if use_fields_interface_for_struct
                 else defined
             )
@@ -102,7 +109,7 @@ def _py_type_from_idl(
             name = defined
         else:
             # enum
-            name = _kind_interface_name(ty.defined)
+            name = _kind_interface_name(defined)  # Use sanitized name
         return f"{defined_types_prefix}{module}.{name}"
     if isinstance(ty, IdlTypeArray):
         inner_type = _py_type_from_idl(
@@ -147,7 +154,9 @@ def _layout_for_type(
         )
         inner = f"borsh.Option({layout})"
     elif isinstance(ty, IdlTypeDefined):
-        defined = _sanitize(ty.defined)
+        # Support both old string format and new object format
+        type_name = get_defined_type_name(ty.defined)
+        defined = _sanitize(type_name)
         maybe_coption_split = defined.split("COption<")
         if len(maybe_coption_split) == 2:
             layout_str = maybe_coption_split[1][:-1]
@@ -525,15 +534,17 @@ def _idl_type_to_json_type(ty: IdlType, types_relative_imports: bool) -> str:
         )
         return f"typing.Optional[{inner}]"
     if isinstance(ty, IdlTypeDefined):
-        defined = ty.defined
-        maybe_coption_split = defined.split("COption<")
+        # Support both old string format and new object format
+        type_name = get_defined_type_name(ty.defined)
+        defined = _sanitize(type_name)  # Sanitize the name
+        maybe_coption_split = type_name.split("COption<")  # Use original for COption check
         if len(maybe_coption_split) == 2:
             inner_type = {"u64": "int", "Pubkey": "str"}[maybe_coption_split[1][:-1]]
             return f"typing.Optional[{inner_type}]"
         defined_types_prefix = (
             "" if types_relative_imports else _DEFAULT_DEFINED_TYPES_PREFIX
         )
-        module = _sanitize(snake(defined))
+        module = _sanitize(snake(type_name))
         return f"{defined_types_prefix}{module}.{_json_interface_name(defined)}"
     if ty == IdlTypeSimple.Bool:
         return "bool"
