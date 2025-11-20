@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.3.0] - 2025-11-20
+
+### Added
+
+- Full support for new Anchor IDL format (v0.1.0 spec) with precomputed discriminators
+- Automatic detection of IDL format version with backward compatibility for legacy format
+
+### Changed
+
+- Decoupled anchorpy-core into separate repository (kakagri/anchorpy-core)
+- Updated repository references from kevinheavey to kakagri
+- Python version requirement updated to ~=3.10
+- Dependency now uses git URL: `anchorpy-core @ git+https://github.com/kakagri/anchorpy-core.git@main`
+
+### Fixed
+
+- CLI address detection for new IDL format (address at top level vs metadata)
+- KeyError when processing IDLs without metadata.address field
+
 ## [0.21.0] - 2025-03-26
 
 ### Fixed

@@ -1,13 +1,28 @@
 [project]
-name = "anchorpy"
-version = "0.21.0"
-description = "The Python Anchor client."
+name = "anchorpy3"
+version = "0.3.0"
+description = "The Python Anchor client with support for new Anchor IDL formats (fork of anchorpy by kevinheavey)"
 authors = [
-    { name = "kevinheavey", email = "kevinheavey123@gmail.com" },
+    { name = "kakagri", email = "kh.grira@gmail.com" },
+    { name = "kevinheavey", email = "kevinheavey123@gmail.com" }
+]
+maintainers = [
     { name = "kakagri", email = "kh.grira@gmail.com" }
 ]
-requires-python = "~=3.9"
+requires-python = "~=3.10"
 readme = "README.md"
+license = { text = "MIT" }
+keywords = ["solana", "anchor", "blockchain", "web3", "crypto"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Distributed Computing",
+]
 dependencies = [
     "construct-typing>=0.5.1,<0.6",
     "solana>=0.36.1,<1.0",
@@ -38,6 +53,9 @@ pytest = [
 [project.urls]
 Repository = "https://github.com/kakagri/anchorpy"
 Documentation = "https://kevinheavey.github.io/anchorpy/"
+"Original Repository" = "https://github.com/kevinheavey/anchorpy"
+"Issue Tracker" = "https://github.com/kakagri/anchorpy/issues"
+Changelog = "https://github.com/kakagri/anchorpy/blob/main/CHANGELOG.md"
 
 [project.scripts]
 anchorpy = "anchorpy.cli:app"
