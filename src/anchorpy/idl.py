@@ -2,7 +2,7 @@
 from typing import Sequence, TypedDict
 
 import solders.pubkey
-from anchorpy3_core.idl import IdlTypeDefinition
+from anchorpy_core.idl import IdlTypeDefinition
 from borsh_construct import U8, CStruct, Vec
 
 from anchorpy.borsh_extension import BorshPubkey

@@ -2,7 +2,7 @@
 """Test minimal IDL structures to isolate the issue."""
 
 import json
-from anchorpy3_core.idl import Idl
+from anchorpy_core.idl import Idl
 
 # Test 1: Empty IDL with null version
 print("Test 1: Empty IDL with null version")

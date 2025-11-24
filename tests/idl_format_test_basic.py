@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 from anchorpy import Program, Provider
-from anchorpy3_core.idl import Idl
+from anchorpy_core.idl import Idl
 
 
 @pytest.fixture

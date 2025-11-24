@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 import pytest
-from anchorpy3_core.idl import Idl
+from anchorpy_core.idl import Idl
 from solders.pubkey import Pubkey
 
 from anchorpy.coder.accounts import AccountsCoder

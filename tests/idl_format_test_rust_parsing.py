@@ -3,7 +3,7 @@
 
 import json
 from pathlib import Path
-from anchorpy3_core.idl import Idl
+from anchorpy_core.idl import Idl
 
 idl_path = Path(__file__).parent.parent / "loopscale_v2.json"
 

@@ -1,7 +1,7 @@
 """This module deals with generating program instructions."""
 from typing import Any, Callable, Sequence, Tuple, cast
 
-from anchorpy3_core.idl import IdlAccount, IdlAccountItem, IdlAccounts, IdlInstruction
+from anchorpy_core.idl import IdlAccount, IdlAccountItem, IdlAccounts, IdlInstruction
 from pyheck import snake
 from solders.instruction import AccountMeta, Instruction
 from solders.pubkey import Pubkey

@@ -2,7 +2,7 @@
 """Test full loopscale_v2.json piece by piece."""
 
 import json
-from anchorpy3_core.idl import Idl
+from anchorpy_core.idl import Idl
 
 with open('../loopscale_v2.json') as f:
     v2_data = json.load(f)

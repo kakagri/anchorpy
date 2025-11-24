@@ -4,7 +4,7 @@
 import json
 import tempfile
 from pathlib import Path
-from anchorpy3_core.idl import Idl
+from anchorpy_core.idl import Idl
 from anchorpy.clientgen.accounts import gen_accounts
 from anchorpy.clientgen.errors import gen_errors
 from anchorpy.clientgen.instructions import gen_instructions

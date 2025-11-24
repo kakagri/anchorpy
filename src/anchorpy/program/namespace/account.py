@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Union
 
-from anchorpy3_core.idl import Idl, IdlTypeDefinition
+from anchorpy_core.idl import Idl, IdlTypeDefinition
 from based58 import b58encode
 from construct import Container
 from solana.rpc.commitment import Commitment

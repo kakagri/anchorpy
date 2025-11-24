@@ -5,7 +5,7 @@ import json
 import tempfile
 from pathlib import Path
 from anchorpy import Program, Provider
-from anchorpy3_core.idl import Idl
+from anchorpy_core.idl import Idl
 from anchorpy.clientgen import generate
 import sys
 
