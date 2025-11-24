@@ -62,7 +62,7 @@ class TestKaminoLendV4:
         """Test instruction encoding with Kamino IDL."""
         idl_data = load_idl_if_exists("kamino_lend_v4.json")
         if idl_data:
-            from anchorpy_core.idl import Idl
+            from anchorpy3_core.idl import Idl
 
             idl = Idl.from_json(json.dumps(idl_data))
             coder = InstructionCoder(idl)
@@ -81,7 +81,7 @@ class TestKaminoLendV4:
         """Test account discriminators with Kamino IDL."""
         idl_data = load_idl_if_exists("kamino_lend_v4.json")
         if idl_data:
-            from anchorpy_core.idl import Idl
+            from anchorpy3_core.idl import Idl
 
             idl = Idl.from_json(json.dumps(idl_data))
             coder = AccountsCoder(idl)
@@ -134,7 +134,7 @@ class TestAdrena:
         """Test that Adrena's defined types are handled correctly."""
         idl_data = load_idl_if_exists("adrena.json")
         if idl_data:
-            from anchorpy_core.idl import Idl
+            from anchorpy3_core.idl import Idl
 
             idl = Idl.from_json(json.dumps(idl_data))
 
@@ -203,7 +203,7 @@ class TestLoopscaleV1:
         """Test that Loopscale uses precomputed discriminators."""
         idl_data = load_idl_if_exists("loopscale_v1.json")
         if idl_data:
-            from anchorpy_core.idl import Idl
+            from anchorpy3_core.idl import Idl
 
             # For new format, we need to check if anchorpy_core supports it
             # If not, we'll test the raw data
@@ -271,7 +271,7 @@ class TestBackwardCompatibility:
         """Test that Coder still works with old IDLs."""
         idl_data = load_idl_if_exists("adrena.json")
         if idl_data:
-            from anchorpy_core.idl import Idl
+            from anchorpy3_core.idl import Idl
 
             idl = Idl.from_json(json.dumps(idl_data))
             coder = Coder(idl)
