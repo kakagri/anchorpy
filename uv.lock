@@ -4,7 +4,7 @@ requires-python = ">=3.10, <4"
 
 [[package]]
 name = "anchorpy3"
-version = "0.3.0"
+version = "0.3.2"
 source = { editable = "." }
 dependencies = [
     { name = "anchorpy3-core" },
@@ -50,7 +50,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anchorpy3-core", specifier = ">=0.3.0,<0.4" },
+    { name = "anchorpy3-core", specifier = ">=0.3.2,<0.4" },
     { name = "autoflake", marker = "extra == 'cli'", specifier = "~=1.4" },
     { name = "based58", specifier = ">=0.1.1,<0.2" },
     { name = "black", marker = "extra == 'cli'", specifier = ">=22.3.0,<23" },
@@ -88,14 +88,26 @@ dev = [
 
 [[package]]
 name = "anchorpy3-core"
-version = "0.3.0"
+version = "0.3.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jsonalias" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/82/cf/ff0a730c1c6a2d6253ab089d2a857581f1c9d7ea31d9232133138e97aa75/anchorpy3_core-0.3.0.tar.gz", hash = "sha256:d195f20061d60cb00e073fbef5d3c9677e57e9ec6ebe58bd04d3a8da0616a32c", size = 31257, upload-time = "2025-11-24T11:02:59.278Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/48/16/7d60f43e02cdcc05840312ff560e0e37b3338bf838640fcf097389ba8232/anchorpy3_core-0.3.3.tar.gz", hash = "sha256:145a494ffcadf7836746c24035eb82679af261c5842ac6305e51e263fd06b3c7", size = 29731, upload-time = "2025-11-26T17:08:47.635Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/26/4e/c8f3fd7b14a5c05a826c8abfb239cef02a9338799b28188eede33d0dbc79/anchorpy3_core-0.3.0-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:8ca92d94e380e40fa5ca7518c4693255cf8dcaff51985310950342ce93c82a7d", size = 789364, upload-time = "2025-11-24T11:02:57.507Z" },
+    { url = "https://files.pythonhosted.org/packages/e2/b3/e131b14b3ea5c559c4dcd77f0c4f9987c2813565bdd99a89d19d68ec543f/anchorpy3_core-0.3.3-cp37-abi3-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:001478f35d8705b0b1c80e4342a9796e1cd0228e6a74173da1e9f22b0fe3ccd5", size = 1643075, upload-time = "2025-11-26T17:08:18.722Z" },
+    { url = "https://files.pythonhosted.org/packages/6a/b6/2d43601bccb59854ca1285d8f0312231bf65edaa8a58b65de18f2b363493/anchorpy3_core-0.3.3-cp37-abi3-macosx_10_12_x86_64.whl", hash = "sha256:b154ab66388e7e83aecf5832cd8d2c04608699f5eebc74b08016493390cafe05", size = 850466, upload-time = "2025-11-26T17:08:20.245Z" },
+    { url = "https://files.pythonhosted.org/packages/4a/d1/d002a9c35fe490ad99ef81aff31e8d7693ed6a6c8845f17dc95a45a7232f/anchorpy3_core-0.3.3-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:656ec06055f5b15640124d51c69816284df769b266a28d6abfba444b97628cc1", size = 881203, upload-time = "2025-11-26T17:08:21.566Z" },
+    { url = "https://files.pythonhosted.org/packages/41/44/5c441f6ed2dcf08384fa70ca5ef102815f88b286a7602211141e953c7660/anchorpy3_core-0.3.3-cp37-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:cc7e7cd59f06e756fe192f97331cdfcf65efa9ccfe0a59d9b3a174a1cb467c7f", size = 862754, upload-time = "2025-11-26T17:08:22.924Z" },
+    { url = "https://files.pythonhosted.org/packages/e9/a0/cdc0d14081777780d9256bae5543699d1dc54b698d140f11a6eae698c2a4/anchorpy3_core-0.3.3-cp37-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:6167e5b73a44ad9782d7bca605b6685be03e948402bc333c4fb401fd6cdf740b", size = 1279751, upload-time = "2025-11-26T17:08:24.233Z" },
+    { url = "https://files.pythonhosted.org/packages/d9/31/21557afae41977eb7fc8ba855ddf51bc660400073fe2e597ccd2010107de/anchorpy3_core-0.3.3-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c5eb1400dc6dd5a5a768652bb38c355f1499f67c8a49898a08e2799ae12d20dd", size = 1044327, upload-time = "2025-11-26T17:08:25.361Z" },
+    { url = "https://files.pythonhosted.org/packages/35/2a/0aa038427af56bb1e10a0f568d5616849d07a1858cb5df973ce1833248c3/anchorpy3_core-0.3.3-cp37-abi3-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:8ea186642ed3020a8ea1cde717b984010029066f5d51035a514106d93559a186", size = 955327, upload-time = "2025-11-26T17:08:26.754Z" },
+    { url = "https://files.pythonhosted.org/packages/65/21/9a7046450166d2659595c1d4764f6846977b1129f4ad765605b3226a30be/anchorpy3_core-0.3.3-cp37-abi3-musllinux_1_2_i686.whl", hash = "sha256:11e57ed3717e6df9ddce59e02a5449b558d6ea23833a81cf19bdd2f618f7e367", size = 1097695, upload-time = "2025-11-26T17:08:27.903Z" },
+    { url = "https://files.pythonhosted.org/packages/36/a1/90baf561d5a2a598b21ddf677f67c3dab194144816dac1e8ae41ee16336d/anchorpy3_core-0.3.3-cp37-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:467c02d0c26c737cf43bcad4c0347ccfb560cf446662536bdc3454727dcf5569", size = 1083591, upload-time = "2025-11-26T17:08:29.306Z" },
+    { url = "https://files.pythonhosted.org/packages/df/c8/7532c2f3db6664604e6e5ee1440863f9fc982b90cce4a2f309d004c24b28/anchorpy3_core-0.3.3-cp37-abi3-win_amd64.whl", hash = "sha256:51ba0fb7c5f2c9ce45a4e71354d55f4b002a77dd39e8fa4ff3e876aaafd83c7d", size = 769321, upload-time = "2025-11-26T17:08:30.701Z" },
+    { url = "https://files.pythonhosted.org/packages/02/d5/04ae86d20e889ea9aa14dfab281be746a055eba0bc744c11880a49836663/anchorpy3_core-0.3.3-pp310-pypy310_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8373cb8ae33ddf85523f938a0a7bc9ab8832964195a79d4341834daa1cae4fed", size = 881042, upload-time = "2025-11-26T17:08:32.064Z" },
+    { url = "https://files.pythonhosted.org/packages/36/bf/afe41c6291b3293a177b8758ed715f251af84ca471c283a32b63281ebca8/anchorpy3_core-0.3.3-pp310-pypy310_pp73-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:680d45479290c0f03c460e7b77545cb043a6fb452aa15eab3e49cb6113898665", size = 863895, upload-time = "2025-11-26T17:08:33.449Z" },
+    { url = "https://files.pythonhosted.org/packages/f5/44/dd50feefb70d1762a92fe4bae87fea6bfaa212a694a9cefe07c0ef82787f/anchorpy3_core-0.3.3-pp310-pypy310_pp73-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:ba5117cf779bcb1ede4e668053bfffd109cdcb2990019f66e160783f0b14bf57", size = 1277247, upload-time = "2025-11-26T17:08:34.475Z" },
 ]
 
 [[package]]

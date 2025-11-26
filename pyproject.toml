@@ -1,6 +1,6 @@
 [project]
 name = "anchorpy3"
-version = "0.3.2"
+version = "0.3.4"
 description = "The Python Anchor client with support for new Anchor IDL formats (fork of anchorpy by kevinheavey)"
 authors = [
     { name = "kakagri", email = "kh.grira@gmail.com" },
@@ -31,7 +31,7 @@ dependencies = [
     "toolz>=0.11.2,<0.12",
     "pyheck>=0.1.4,<0.2",
     "based58>=0.1.1,<0.2",
-    "anchorpy3_core>=0.3.2,<0.4",
+    "anchorpy3_core>=0.3.4,<0.4",
     "toml>=0.10.2,<0.11",
 ]
 
