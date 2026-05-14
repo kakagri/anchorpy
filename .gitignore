@@ -152,3 +152,6 @@ test_old_format_codegen.py
 
 # Generated client code (for testing)
 codegen_*/
+
+# macOS
+.DS_Store
