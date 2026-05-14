@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import cast
 
-from anchorpy_core.idl import (
+from anchorpy.idl_adapter import (
     Idl,
     IdlField,
     IdlTypeDefinition,

@@ -5,7 +5,7 @@ from keyword import kwlist
 from types import MappingProxyType
 from typing import Mapping, Type, cast
 
-from anchorpy_core.idl import (
+from anchorpy.idl_adapter import (
     IdlField,
     IdlType,
     IdlTypeArray,

@@ -2,7 +2,7 @@
 from hashlib import sha256
 from typing import Dict, Union
 
-from anchorpy_core.idl import (
+from anchorpy.idl_adapter import (
     Idl,
     IdlEnumVariant,
     IdlField,

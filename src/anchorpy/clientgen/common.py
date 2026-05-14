@@ -2,7 +2,7 @@
 import keyword
 from typing import Optional
 
-from anchorpy_core.idl import (
+from anchorpy.idl_adapter import (
     Idl,
     IdlField,
     IdlType,

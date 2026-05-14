@@ -1,5 +1,5 @@
 """Provides the Coder class."""
-from anchorpy_core.idl import Idl
+from anchorpy.idl_adapter import Idl
 
 from anchorpy.coder.accounts import AccountsCoder
 from anchorpy.coder.event import EventCoder

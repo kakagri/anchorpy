@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional, cast
 
 import typer
-from anchorpy_core.idl import Idl
+from anchorpy.idl_adapter import Idl
 from IPython import embed
 
 from anchorpy import create_workspace

@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from typing import Any, Dict, NamedTuple, Tuple, Union, cast
 
-from anchorpy_core.idl import (
+from anchorpy.idl_adapter import (
     IdlAccountItem,
     IdlAccounts,
     IdlInstruction,

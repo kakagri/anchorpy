@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Union as TypingUnion
 from typing import cast
 
-from anchorpy_core.idl import (
+from anchorpy.idl_adapter import (
     Idl,
     IdlEnumVariant,
     IdlField,
